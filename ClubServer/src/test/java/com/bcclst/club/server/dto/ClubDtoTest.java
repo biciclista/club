@@ -12,7 +12,6 @@ import javax.validation.ValidatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.bcclst.club.server.ClubDto;
 import com.bcclst.common.util.StringUtil;
 
 public class ClubDtoTest {
