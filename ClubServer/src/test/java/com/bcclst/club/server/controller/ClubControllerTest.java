@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.bcclst.club.server.dto.ClubDto;
 import com.bcclst.club.server.service.ClubService;
+import com.bcclst.club.server.service.exception.ExistentClubAcronymException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RunWith(SpringRunner.class)
@@ -43,5 +44,15 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$.id").value(dto.getId()))
 				.andExpect(jsonPath("$.name").value(dto.getName()))
 				.andExpect(jsonPath("$.acronym").value(dto.getAcronym()));
+	}
+	
+	@Test
+	public void createExistentAcronym() throws Exception {
+		when(clubService.create(any(ClubDto.class))).thenThrow(new ExistentClubAcronymException());
+		
+		this.mvc.perform(post("/clubs/create")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", "AAA"))))
+				.andExpect(status().isConflict());
 	}
 }
