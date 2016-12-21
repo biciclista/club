@@ -14,16 +14,16 @@ public class ClubDto {
 
 	@NotNull
 	@Size(min = 3, max = 5)
-	private String shortName;
+	private String acronym;
 
 	public ClubDto() {
 		
 	}
 	
-	public ClubDto(Long id, String name, String shortName) {
+	public ClubDto(Long id, String name, String acronym) {
 		this.id = id;
 		this.name = name;
-		this.shortName = shortName;
+		this.acronym = acronym;
 	}
 
 	public Long getId() {
@@ -42,12 +42,12 @@ public class ClubDto {
 		this.name = name;
 	}
 
-	public String getShortName() {
-		return shortName;
+	public String getAcronym() {
+		return acronym;
 	}
 
-	public void setShortName(String shortName) {
-		this.shortName = shortName;
+	public void setAcronym(String acronym) {
+		this.acronym = acronym;
 	}
 
 }
