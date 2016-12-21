@@ -10,7 +10,7 @@ public class ClubDto {
 	private Long id;
 
 	@NotNull
-	@Size(max = 64)
+	@Size(min = 3, max = 64)
 	private String name;
 
 	@NotNull

@@ -16,7 +16,7 @@ import com.bcclst.common.util.StringUtil;
 
 public class ClubDtoTest {
 	private final static Long ID_OK = 0L;
-	private final static String NAME_OK = "Club Deportivo 1";
+	private final static String NAME_OK = "Club deportivo 1";
 	private final static String ACRONYM_OK = "CLUB1";
 
 	private static Validator validator;
@@ -50,6 +50,18 @@ public class ClubDtoTest {
 	@Test
 	public void nameTooLong() {
 		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(65), ACRONYM_OK);
+
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(1, violations.size());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("name", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void nameTooShort() {
+		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(2), ACRONYM_OK);
 
 		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
 
