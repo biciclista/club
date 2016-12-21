@@ -1,6 +1,7 @@
 package com.bcclst.club.server.dto;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 public class ClubDto {
@@ -13,7 +14,7 @@ public class ClubDto {
 	private String name;
 
 	@NotNull
-	@Size(min = 3, max = 5)
+	@Pattern(regexp = "[a-zA-Z0-9]{3,5}")
 	private String acronym;
 
 	public ClubDto() {
