@@ -1,6 +1,6 @@
 package com.bcclst.club.server.dto;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Set;
 
@@ -12,13 +12,12 @@ import javax.validation.ValidatorFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.bcclst.club.server.ClubDto;
 import com.bcclst.common.util.StringUtil;
 
 public class ClubDtoTest {
-	private final Long ID_OK = 0L;
-	private final String NAME_OK = "Club Deportivo";
-	private final String SHORTNAME_OK = "CLUB";
+	private final static Long ID_OK = 0L;
+	private final static String NAME_OK = "Club deportivo 1";
+	private final static String ACRONYM_OK = "CLUB1";
 
 	private static Validator validator;
 
@@ -29,20 +28,82 @@ public class ClubDtoTest {
 	}
 
 	@Test
-	public void ifParametersOkPasses() {
-		ClubDto club = new ClubDto(ID_OK, NAME_OK, SHORTNAME_OK);
-		
+	public void clubIsValid() {
+		ClubDto club = new ClubDto(ID_OK, NAME_OK, ACRONYM_OK);
+
 		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
 		assertEquals(0, violations.size());
 	}
 
 	@Test
-	public void ifShortStringsValidationFails() {
+	public void acronymWithInvalidCharacters() {
+		ClubDto club = new ClubDto(ID_OK, NAME_OK, "AA_AA");
+		
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(1, violations.size());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("acronym", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void nameTooLong() {
+		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(65), ACRONYM_OK);
+
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(1, violations.size());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("name", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void nameTooShort() {
+		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(2), ACRONYM_OK);
+
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(1, violations.size());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("name", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void parametersAreNull() {
+		ClubDto club = new ClubDto(null, null, null);
+
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(3, violations.size());
+		for(ConstraintViolation<ClubDto> violation : violations) {
+			assertEquals("{javax.validation.constraints.NotNull.message}", violation.getMessageTemplate());
+		}
+	}
+	
+	@Test
+	public void acronymTooLong() {
+		ClubDto club = new ClubDto(ID_OK, NAME_OK, StringUtil.createStringWithLength(6));
+
+		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
+
+		assertEquals(1, violations.size());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("acronym", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void acronymTooShort() {
 		ClubDto club = new ClubDto(ID_OK, NAME_OK, StringUtil.createStringWithLength(2));
 
 		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
 
 		assertEquals(1, violations.size());
-		assertEquals("size must be between 3 and 5", violations.iterator().next().getMessage());
+		ConstraintViolation<ClubDto> violation = violations.iterator().next();
+		assertEquals("acronym", violation.getPropertyPath().toString());
+		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
 	}
 }
