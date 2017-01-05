@@ -1,1 +1,6 @@
+com.bcclst.club.server
 com.bcclst.club.server.controller
+com.bcclst.club.server.controller.advice
+com.bcclst.club.server.dto
+com.bcclst.club.server.service
+com.bcclst.club.server.service.exception

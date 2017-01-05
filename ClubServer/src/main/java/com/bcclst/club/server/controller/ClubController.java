@@ -78,6 +78,8 @@ public class ClubController {
 
 		final String msg = messageSource.getMessage("exception.duplicatedClubAcronymException.message", params,
 				locale);
+		
+		logger.debug("Message: {}:", msg);
 
 		return new RestError(0, msg, e.getMessage(), e);
 	}
