@@ -49,8 +49,9 @@ public class ClubController {
 	 * Creates a new Club. Accepts POST method with a {@link ClubDto} object.
 	 * 
 	 * @param club ClubDto object with values for new club.
-	 * @return ClubDto object with the values of the new created Club.
-	 * @throws DuplicatedClubAcronymException If Acronym for new club is in use by another club.
+	 * @return ClubDto Object with the values of the new created Club.
+	 * @throws DuplicatedClubAcronymException If Acronym for new club is in use
+	 *             by another club.
 	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public ClubDto create(@RequestBody @Valid final ClubDto club) throws DuplicatedClubAcronymException {

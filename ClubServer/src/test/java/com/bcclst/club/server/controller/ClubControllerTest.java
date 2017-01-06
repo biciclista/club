@@ -75,18 +75,19 @@ public class ClubControllerTest {
 	@Test
 	public void createExistentAcronym() throws Exception {
 		final String DUPLICATED_ACRONYM = "AAA";
-		
+
 		when(clubService.create(any(ClubDto.class))).thenThrow(new DuplicatedClubAcronymException(DUPLICATED_ACRONYM));
 
 		this.mvc.perform(post(PATH_CLUBS_CREATE)
-				//.locale(Locale.forLanguageTag("es"))
-				//.header("Accept-Language", "en")
+				// .locale(Locale.forLanguageTag("es"))
+				// .header("Accept-Language", "en")
 				.param("lang", "en")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
 				.andExpect(status().isConflict())
 				.andExpect(jsonPath("$.code").value(0))
-				.andExpect(jsonPath("$.message").value(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM)));
+				.andExpect(jsonPath("$.message")
+						.value(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM)));
 
 		// Verify ClubService.create() is called once.
 		verify(clubService).create(any(ClubDto.class));

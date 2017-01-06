@@ -8,9 +8,11 @@ import javax.validation.constraints.Size;
  * DTO object form transfer values between client and server. Club has the
  * following fields.
  * <ul>
- * 	<li>id: Unique identifier of club.
- * 	<li>name: Complete name of the club. Size must be between 3 and 64 characters.
- * 	<li>acronym: Short name for the club. Size must be between 3 and 5 characters.
+ * <li>id: Unique identifier of club.
+ * <li>name: Complete name of the club. Size must be between 3 and 64
+ * characters.
+ * <li>acronym: Short name for the club. Size must be between 3 and 5
+ * characters.
  * </ul>
  * 
  * @author nacho

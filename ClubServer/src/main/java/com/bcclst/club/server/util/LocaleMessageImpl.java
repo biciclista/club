@@ -8,7 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 public class LocaleMessageImpl implements LocaleMessage {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(LocaleMessage.class);
 
 	private MessageSource messageSource;
@@ -22,7 +22,7 @@ public class LocaleMessageImpl implements LocaleMessage {
 		final Locale locale = LocaleContextHolder.getLocale();
 
 		logger.debug("Locale: {}", locale);
-		
+
 		return messageSource.getMessage(code, params, locale);
 	}
 

@@ -23,7 +23,7 @@ import com.bcclst.club.server.util.LocaleMessageImpl;
  */
 @Configuration
 public class LocaleConfiguration extends WebMvcConfigurerAdapter {
-	
+
 	/**
 	 * Provides the message source bean for localizing messages.
 	 * 
@@ -69,7 +69,12 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	public void addInterceptors(InterceptorRegistry interceptorRegistry) {
 		interceptorRegistry.addInterceptor(localeChangeInterceptor());
 	}
-	
+
+	/**
+	 * Gets the bean for retrieving localized messages.
+	 * 
+	 * @return The {@link LocaleMessage} bean.
+	 */
 	@Bean
 	public LocaleMessage localeMessage() {
 		return new LocaleMessageImpl(this.messageSource());

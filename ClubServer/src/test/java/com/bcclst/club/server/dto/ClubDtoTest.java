@@ -38,7 +38,7 @@ public class ClubDtoTest {
 	@Test
 	public void acronymWithInvalidCharacters() {
 		ClubDto club = new ClubDto(ID_OK, NAME_OK, "AA_AA");
-		
+
 		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
 
 		assertEquals(1, violations.size());
@@ -46,7 +46,7 @@ public class ClubDtoTest {
 		assertEquals("acronym", violation.getPropertyPath().toString());
 		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
 	}
-	
+
 	@Test
 	public void nameTooLong() {
 		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(65), ACRONYM_OK);
@@ -58,7 +58,7 @@ public class ClubDtoTest {
 		assertEquals("name", violation.getPropertyPath().toString());
 		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
 	}
-	
+
 	@Test
 	public void nameTooShort() {
 		ClubDto club = new ClubDto(ID_OK, StringUtil.createStringWithLength(2), ACRONYM_OK);
@@ -70,7 +70,7 @@ public class ClubDtoTest {
 		assertEquals("name", violation.getPropertyPath().toString());
 		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
 	}
-	
+
 	@Test
 	public void parametersAreNull() {
 		ClubDto club = new ClubDto(null, null, null);
@@ -78,11 +78,11 @@ public class ClubDtoTest {
 		Set<ConstraintViolation<ClubDto>> violations = validator.validate(club);
 
 		assertEquals(3, violations.size());
-		for(ConstraintViolation<ClubDto> violation : violations) {
+		for (ConstraintViolation<ClubDto> violation : violations) {
 			assertEquals("{javax.validation.constraints.NotNull.message}", violation.getMessageTemplate());
 		}
 	}
-	
+
 	@Test
 	public void acronymTooLong() {
 		ClubDto club = new ClubDto(ID_OK, NAME_OK, StringUtil.createStringWithLength(6));
@@ -94,7 +94,7 @@ public class ClubDtoTest {
 		assertEquals("acronym", violation.getPropertyPath().toString());
 		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
 	}
-	
+
 	@Test
 	public void acronymTooShort() {
 		ClubDto club = new ClubDto(ID_OK, NAME_OK, StringUtil.createStringWithLength(2));

@@ -4,7 +4,7 @@ public class DuplicatedClubAcronymException extends Exception {
 
 	private static final long serialVersionUID = 2894647064409676921L;
 	private static final String message = "The acronym %s is in use by another club.";
-	
+
 	private String duplicatedAcronym;
 
 	public DuplicatedClubAcronymException(String acronym) {
