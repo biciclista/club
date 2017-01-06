@@ -92,7 +92,7 @@ public class ClubDtoTest {
 		assertEquals(1, violations.size());
 		ConstraintViolation<ClubDto> violation = violations.iterator().next();
 		assertEquals("acronym", violation.getPropertyPath().toString());
-		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
+		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
 	}
 	
 	@Test
@@ -104,6 +104,6 @@ public class ClubDtoTest {
 		assertEquals(1, violations.size());
 		ConstraintViolation<ClubDto> violation = violations.iterator().next();
 		assertEquals("acronym", violation.getPropertyPath().toString());
-		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
+		assertEquals("{javax.validation.constraints.Size.message}", violation.getMessageTemplate());
 	}
 }
