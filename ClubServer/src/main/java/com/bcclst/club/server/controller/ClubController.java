@@ -1,13 +1,9 @@
 package com.bcclst.club.server.controller;
 
-import java.util.Locale;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +17,7 @@ import com.bcclst.club.server.dto.ClubDto;
 import com.bcclst.club.server.service.ClubService;
 import com.bcclst.club.server.service.exception.ClubNotFoundException;
 import com.bcclst.club.server.service.exception.DuplicatedClubAcronymException;
+import com.bcclst.club.server.util.LocaleMessage;
 import com.bcclst.common.rest.RestError;
 
 /**
@@ -35,7 +32,7 @@ public class ClubController {
 	private static final Logger logger = LoggerFactory.getLogger(ClubController.class);
 
 	final private ClubService clubService;
-	final private MessageSource messageSource;
+	final private LocaleMessage localeMessage;
 
 	/**
 	 * Constructor for Spring.
@@ -43,9 +40,9 @@ public class ClubController {
 	 * @param clubService Bean for service for managing club requests.
 	 * @param messageSource Bean for i18n messages source.
 	 */
-	public ClubController(final ClubService clubService, final MessageSource messageSource) {
+	public ClubController(final ClubService clubService, final LocaleMessage localeMessage) {
 		this.clubService = clubService;
-		this.messageSource = messageSource;
+		this.localeMessage = localeMessage;
 	}
 
 	/**
@@ -72,12 +69,7 @@ public class ClubController {
 	public RestError handleDuplicatedClubAcronymException(DuplicatedClubAcronymException e) {
 
 		final String[] params = { e.getDuplicatedAcronym() };
-		final Locale locale = LocaleContextHolder.getLocale();
-
-		logger.debug("Locale: {}", locale);
-
-		final String msg = messageSource.getMessage("exception.duplicatedClubAcronymException.message", params,
-				locale);
+		final String msg = localeMessage.getMessage("exception.duplicatedClubAcronymException.message", params);
 
 		return new RestError(0, msg, e.getMessage(), e);
 	}

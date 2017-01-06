@@ -11,6 +11,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.bcclst.club.server.util.LocaleMessage;
+import com.bcclst.club.server.util.LocaleMessageImpl;
+
 /**
  * Spring configuration for localization. Localization is made using session
  * resolver looking for param "lang".
@@ -20,6 +23,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
  */
 @Configuration
 public class LocaleConfiguration extends WebMvcConfigurerAdapter {
+	
 	/**
 	 * Provides the message source bean for localizing messages.
 	 * 
@@ -64,5 +68,10 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	@Override
 	public void addInterceptors(InterceptorRegistry interceptorRegistry) {
 		interceptorRegistry.addInterceptor(localeChangeInterceptor());
+	}
+	
+	@Bean
+	public LocaleMessage localeMessage() {
+		return new LocaleMessageImpl(this.messageSource());
 	}
 }
