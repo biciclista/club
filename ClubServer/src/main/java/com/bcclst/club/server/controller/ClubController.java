@@ -53,7 +53,7 @@ public class ClubController {
 	 * @throws DuplicatedClubAcronymException If Acronym for new club is in use
 	 *             by another club.
 	 */
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	@RequestMapping(method = RequestMethod.POST)
 	public ClubDto create(@RequestBody @Valid final ClubDto club) throws DuplicatedClubAcronymException {
 		return clubService.create(club);
 	}

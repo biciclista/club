@@ -34,7 +34,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ClubControllerTest {
 	// Base path for URLs.
 	private static final String PATH_CLUBS_BASE = "/clubs";
-	private static final String PATH_CLUBS_CREATE = PATH_CLUBS_BASE + "/create";
 	private static final String PATH_CLUBS_FIND_BY_ID = PATH_CLUBS_BASE + "/{id}";
 
 	@Autowired
@@ -52,7 +51,7 @@ public class ClubControllerTest {
 		final ClubDto createdClub = new ClubDto(1L, "Club", "CLUB");
 		when(clubService.create(any(ClubDto.class))).thenReturn(createdClub);
 
-		this.mvc.perform(post(PATH_CLUBS_CREATE)
+		this.mvc.perform(post(PATH_CLUBS_BASE)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(club)))
 				.andExpect(status().isOk())
@@ -78,7 +77,7 @@ public class ClubControllerTest {
 
 		when(clubService.create(any(ClubDto.class))).thenThrow(new DuplicatedClubAcronymException(DUPLICATED_ACRONYM));
 
-		this.mvc.perform(post(PATH_CLUBS_CREATE)
+		this.mvc.perform(post(PATH_CLUBS_BASE)
 				// .locale(Locale.forLanguageTag("es"))
 				// .header("Accept-Language", "en")
 				.param("lang", "en")
@@ -96,7 +95,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void createWithInvalidDto() throws Exception {
-		this.mvc.perform(post(PATH_CLUBS_CREATE)
+		this.mvc.perform(post(PATH_CLUBS_BASE)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
 				.andExpect(status().isBadRequest())
