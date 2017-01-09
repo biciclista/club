@@ -48,16 +48,15 @@ public class ClubControllerTest {
 	@Test
 	public void createIsValid() throws Exception {
 		final ClubDto club = new ClubDto(0L, "Club", "CLUB");
-		final ClubDto createdClub = new ClubDto(1L, "Club", "CLUB");
-		when(clubService.create(any(ClubDto.class))).thenReturn(createdClub);
+		when(clubService.create(any(ClubDto.class))).thenReturn(club);
 
 		this.mvc.perform(post(PATH_CLUBS_BASE)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(club)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.id").value(createdClub.getId()))
-				.andExpect(jsonPath("$.name").value(createdClub.getName()))
-				.andExpect(jsonPath("$.acronym").value(createdClub.getAcronym()));
+				.andExpect(jsonPath("$.id").value(club.getId()))
+				.andExpect(jsonPath("$.name").value(club.getName()))
+				.andExpect(jsonPath("$.acronym").value(club.getAcronym()));
 
 		// Verify ClubService.create() is called once.
 		ArgumentCaptor<ClubDto> dtoCaptor = ArgumentCaptor.forClass(ClubDto.class);
