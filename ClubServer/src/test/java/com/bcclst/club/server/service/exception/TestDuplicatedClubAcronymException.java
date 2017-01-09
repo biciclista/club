@@ -7,7 +7,7 @@ import org.junit.Test;
 public class TestDuplicatedClubAcronymException {
 
 	@Test
-	public void testGetLocalizedMessage() {
+	public void testGetFormatedMessage() {
 
 		DuplicatedClubAcronymException e = new DuplicatedClubAcronymException("AA");
 		assertEquals(String.format("The acronym '%s' is in use by another club.", "AA"), e.getMessage());
