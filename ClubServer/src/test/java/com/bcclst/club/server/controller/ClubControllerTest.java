@@ -1,5 +1,7 @@
 package com.bcclst.club.server.controller;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
@@ -54,6 +56,7 @@ public class ClubControllerTest {
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(club)))
 				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.id").value(club.getId()))
 				.andExpect(jsonPath("$.name").value(club.getName()))
 				.andExpect(jsonPath("$.acronym").value(club.getAcronym()));
@@ -79,10 +82,11 @@ public class ClubControllerTest {
 		this.mvc.perform(post(PATH_CLUBS_BASE)
 				// .locale(Locale.forLanguageTag("es"))
 				// .header("Accept-Language", "en")
-				.param("lang", "en")
+				//.param("lang", "en")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
 				.andExpect(status().isConflict())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.code").value(0))
 				.andExpect(jsonPath("$.message")
 						.value(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM)));
@@ -95,10 +99,13 @@ public class ClubControllerTest {
 	@Test
 	public void createWithInvalidDto() throws Exception {
 		this.mvc.perform(post(PATH_CLUBS_BASE)
+				//.param("lang", "en")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
 				.andExpect(status().isBadRequest())
-				.andExpect(content().string(""));
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$.fieldErrors", hasSize(3)))
+                .andExpect(jsonPath("$.fieldErrors[*].field", containsInAnyOrder("id", "name", "acronym")));
 
 		// Check that ClubService is not called.
 		verifyZeroInteractions(clubService);

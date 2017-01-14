@@ -19,7 +19,6 @@ import com.bcclst.club.server.util.LocaleMessageImpl;
  * resolver looking for param "lang".
  * 
  * @author Nacho
- *
  */
 @Configuration
 public class LocaleConfiguration extends WebMvcConfigurerAdapter {
@@ -34,6 +33,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
 		source.setBasenames("classpath:i18n/messages");
 		source.setFallbackToSystemLocale(false);
+		source.setDefaultEncoding("UTF-8");
 
 		return source;
 	}
@@ -47,7 +47,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-		sessionLocaleResolver.setDefaultLocale(Locale.forLanguageTag("es"));
+		//sessionLocaleResolver.setDefaultLocale(Locale.forLanguageTag("es"));
 
 		return sessionLocaleResolver;
 	}
@@ -79,4 +79,5 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	public LocaleMessage localeMessage() {
 		return new LocaleMessageImpl(this.messageSource());
 	}
+	
 }

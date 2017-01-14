@@ -5,6 +5,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 public class LocaleMessageImpl implements LocaleMessage {
@@ -29,6 +30,15 @@ public class LocaleMessageImpl implements LocaleMessage {
 	@Override
 	public String getMessage(String code) {
 		return getMessage(code, null);
+	}
+
+	@Override
+	public String getMessage(MessageSourceResolvable resolvable) {
+		final Locale locale = LocaleContextHolder.getLocale();
+
+		logger.debug("Locale: {}", locale);
+
+		return messageSource.getMessage(resolvable, locale);
 	}
 
 }

@@ -5,18 +5,17 @@ import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
 /**
- * DTO object form transfer values between client and server. Club has the
+ * DTO object form transfer values between client and server. It has the
  * following fields.
  * <ul>
  * <li>id: Unique identifier of club.
  * <li>name: Complete name of the club. Size must be between 3 and 64
  * characters.
  * <li>acronym: Short name for the club. Size must be between 3 and 5
- * characters.
+ * characters. Has to be formed by capital letters (A-Z) and numbers (0-9).
  * </ul>
  * 
- * @author nacho
- *
+ * @author Nacho
  */
 public class ClubDto {
 
@@ -27,8 +26,11 @@ public class ClubDto {
 	@Size(min = 3, max = 64)
 	private String name;
 
+	/**
+	 * 
+	 */
 	@NotNull
-	@Pattern(regexp = "[a-zA-Z0-9]{3,5}")
+	@Pattern(regexp = "[A-Z0-9]{3,5}")
 	private String acronym;
 
 	public ClubDto() {

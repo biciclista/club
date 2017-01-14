@@ -1,5 +1,7 @@
 package com.bcclst.club.server.util;
 
+import org.springframework.context.MessageSourceResolvable;
+
 /**
  * Interface to look for localized messages.
  * 
@@ -22,4 +24,6 @@ public interface LocaleMessage {
 	 * @return The localized message.
 	 */
 	public String getMessage(String id);
+	
+	String getMessage(MessageSourceResolvable resolvable);
 }
