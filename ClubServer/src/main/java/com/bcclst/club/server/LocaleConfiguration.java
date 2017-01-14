@@ -1,7 +1,5 @@
 package com.bcclst.club.server;
 
-import java.util.Locale;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -39,15 +37,13 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	}
 
 	/**
-	 * Provides the locale resolver bean. Uses SessionLocaleResolver with "es"
-	 * locale default.
+	 * Provides the locale resolver bean. Uses SessionLocaleResolver.
 	 * 
 	 * @return The LocaleResolver bean.
 	 */
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-		//sessionLocaleResolver.setDefaultLocale(Locale.forLanguageTag("es"));
 
 		return sessionLocaleResolver;
 	}

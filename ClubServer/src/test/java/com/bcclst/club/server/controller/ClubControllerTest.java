@@ -80,9 +80,6 @@ public class ClubControllerTest {
 		when(clubService.create(any(ClubDto.class))).thenThrow(new DuplicatedClubAcronymException(DUPLICATED_ACRONYM));
 
 		this.mvc.perform(post(PATH_CLUBS_BASE)
-				// .locale(Locale.forLanguageTag("es"))
-				// .header("Accept-Language", "en")
-				//.param("lang", "en")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
 				.andExpect(status().isConflict())
@@ -99,7 +96,6 @@ public class ClubControllerTest {
 	@Test
 	public void createWithInvalidDto() throws Exception {
 		this.mvc.perform(post(PATH_CLUBS_BASE)
-				//.param("lang", "en")
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
 				.andExpect(status().isBadRequest())
@@ -116,7 +112,9 @@ public class ClubControllerTest {
 		final ClubDto foundClub = new ClubDto(1L, "Club", "CLUB");
 		when(clubService.findById(anyLong())).thenReturn(foundClub);
 
-		this.mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L))
+		this.mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.id").value(foundClub.getId()))
 				.andExpect(jsonPath("$.name").value(foundClub.getName()))
@@ -130,8 +128,10 @@ public class ClubControllerTest {
 	public void findByIdClubNotFound() throws Exception {
 		when(clubService.findById(anyLong())).thenThrow(new ClubNotFoundException());
 
-		mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L))
-				.andExpect(status().isNotFound());
+		mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isNotFound())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
 
 		verify(clubService).findById(1L);
 		verifyNoMoreInteractions(clubService);
