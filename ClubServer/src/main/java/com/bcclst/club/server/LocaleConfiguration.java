@@ -29,7 +29,7 @@ public class LocaleConfiguration extends WebMvcConfigurerAdapter {
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-		source.setBasenames("classpath:i18n/messages");
+		source.setBasenames("classpath:i18n/messages", "classpath:i18n/errors");
 		source.setFallbackToSystemLocale(false);
 		source.setDefaultEncoding("UTF-8");
 

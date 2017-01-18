@@ -1,8 +1,9 @@
 package com.bcclst.club.server.controller;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -38,6 +39,9 @@ public class ClubControllerTest {
 	private static final String PATH_CLUBS_BASE = "/clubs";
 	private static final String PATH_CLUBS_FIND_BY_ID = PATH_CLUBS_BASE + "/{id}";
 
+	// Error codes.
+	private final static String ERROR_DUPLICATED_ACRONYM = "10001001";
+
 	@Autowired
 	private MockMvc mvc;
 
@@ -57,9 +61,9 @@ public class ClubControllerTest {
 				.content(objectMapper.writeValueAsBytes(club)))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.id").value(club.getId()))
-				.andExpect(jsonPath("$.name").value(club.getName()))
-				.andExpect(jsonPath("$.acronym").value(club.getAcronym()));
+				.andExpect(jsonPath("$.id", is(club.getId().intValue())))
+				.andExpect(jsonPath("$.name", is(club.getName())))
+				.andExpect(jsonPath("$.acronym", is(club.getAcronym())));
 
 		// Verify ClubService.create() is called once.
 		ArgumentCaptor<ClubDto> dtoCaptor = ArgumentCaptor.forClass(ClubDto.class);
@@ -68,9 +72,10 @@ public class ClubControllerTest {
 
 		// Verify the ClubDto passed to ClubService.
 		ClubDto capturedClub = dtoCaptor.getValue();
-		assertEquals(club.getId(), capturedClub.getId());
-		assertEquals(club.getName(), capturedClub.getName());
-		assertEquals(club.getAcronym(), capturedClub.getAcronym());
+		assertThat(capturedClub.getId(), is(club.getId()));
+		assertThat(capturedClub.getName(), is(club.getName()));
+		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
+		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
 	}
 
 	@Test
@@ -84,9 +89,9 @@ public class ClubControllerTest {
 				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
 				.andExpect(status().isConflict())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.code").value(0))
-				.andExpect(jsonPath("$.message")
-						.value(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM)));
+				.andExpect(jsonPath("$.code", is(ERROR_DUPLICATED_ACRONYM)))
+				.andExpect(jsonPath("$.message",
+						is(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM))));
 
 		// Verify ClubService.create() is called once.
 		verify(clubService).create(any(ClubDto.class));
@@ -100,8 +105,8 @@ public class ClubControllerTest {
 				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-                .andExpect(jsonPath("$.fieldErrors", hasSize(3)))
-                .andExpect(jsonPath("$.fieldErrors[*].field", containsInAnyOrder("id", "name", "acronym")));
+				.andExpect(jsonPath("$.fieldErrors", hasSize(3)))
+				.andExpect(jsonPath("$.fieldErrors[*].field", containsInAnyOrder("id", "name", "acronym")));
 
 		// Check that ClubService is not called.
 		verifyZeroInteractions(clubService);
@@ -110,15 +115,15 @@ public class ClubControllerTest {
 	@Test
 	public void findByIdIsValid() throws Exception {
 		final ClubDto foundClub = new ClubDto(1L, "Club", "CLUB");
-		when(clubService.findById(anyLong())).thenReturn(foundClub);
+		when(clubService.findById(foundClub.getId())).thenReturn(foundClub);
 
 		this.mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
-				.andExpect(jsonPath("$.id").value(foundClub.getId()))
-				.andExpect(jsonPath("$.name").value(foundClub.getName()))
-				.andExpect(jsonPath("$.acronym").value(foundClub.getAcronym()));
+				.andExpect(jsonPath("$.id", is(foundClub.getId().intValue())))
+				.andExpect(jsonPath("$.name", is(foundClub.getName())))
+				.andExpect(jsonPath("$.acronym", is(foundClub.getAcronym())));
 
 		verify(clubService).findById(1L);
 		verifyNoMoreInteractions(clubService);
@@ -126,7 +131,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void findByIdClubNotFound() throws Exception {
-		when(clubService.findById(anyLong())).thenThrow(new ClubNotFoundException());
+		when(clubService.findById(anyLong())).thenThrow(new ClubNotFoundException(0));
 
 		mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))

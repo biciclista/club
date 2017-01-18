@@ -9,23 +9,22 @@ public class RestErrorDto implements Serializable {
 	private static final long serialVersionUID = 7026894240730324882L;
 
 	private final HttpStatus status;
-	private final int code;
-	private final String description;
+	private final String code;
+	private final String message;
 	private final String developerInfo;
 	private final Throwable exception;
 	
 	/**
 	 * @param status
 	 * @param code
-	 * @param description
+	 * @param message
 	 * @param developerInfo
 	 * @param exception
 	 */
-	public RestErrorDto(HttpStatus status, int code, String description, String developerInfo, Throwable exception) {
-		super();
+	public RestErrorDto(HttpStatus status, String code, String description, String developerInfo, Throwable exception) {
 		this.status = status;
 		this.code = code;
-		this.description = description;
+		this.message = description;
 		this.developerInfo = developerInfo;
 		this.exception = exception;
 	}
@@ -34,12 +33,12 @@ public class RestErrorDto implements Serializable {
 		return status;
 	}
 
-	public int getCode() {
+	public String getCode() {
 		return code;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getMessage() {
+		return message;
 	}
 
 	public String getDeveloperInfo() {
