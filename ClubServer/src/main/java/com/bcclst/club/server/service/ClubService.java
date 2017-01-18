@@ -8,9 +8,9 @@ import com.bcclst.club.server.service.exception.DuplicatedClubAcronymException;
 
 public interface ClubService {
 
-	public ClubDto create(ClubDto club) throws DuplicatedClubAcronymException;
+	ClubDto create(ClubDto club) throws DuplicatedClubAcronymException;
 
-	public ClubDto findById(long id) throws ClubNotFoundException;
+	ClubDto findById(long id) throws ClubNotFoundException;
 
 	List<ClubDto> findAll();
 }
