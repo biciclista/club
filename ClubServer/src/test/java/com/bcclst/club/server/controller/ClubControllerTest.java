@@ -16,6 +16,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -139,6 +142,48 @@ public class ClubControllerTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
 
 		verify(clubService).findById(1L);
+		verifyNoMoreInteractions(clubService);
+	}
+
+	@Test
+	public void findAll() throws Exception {
+		final ClubDto club1 = new ClubDto(1L, "Club 1", "CLUB1");
+		final ClubDto club2 = new ClubDto(2L, "Club 2", "CLUB2");
+		final ClubDto[] clubs = { club1, club2 };
+		final List<ClubDto> clubList = Arrays.asList(clubs);
+
+		when(clubService.findAll()).thenReturn(clubList);
+
+		mvc.perform(get(PATH_CLUBS_BASE)
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$", hasSize(2)))
+				.andExpect(jsonPath("$[0].id", is(club1.getId().intValue())))
+				.andExpect(jsonPath("$[0].name", is(club1.getName())))
+				.andExpect(jsonPath("$[0].acronym", is(club1.getAcronym())))
+				.andExpect(jsonPath("$[1].id", is(club2.getId().intValue())))
+				.andExpect(jsonPath("$[1].name", is(club2.getName())))
+				.andExpect(jsonPath("$[1].acronym", is(club2.getAcronym())));
+
+		verify(clubService).findAll();
+		verifyNoMoreInteractions(clubService);
+	}
+
+	@Test
+	public void findAllIsEmpty() throws Exception {
+		final ClubDto[] clubs = {};
+		final List<ClubDto> clubList = Arrays.asList(clubs);
+
+		when(clubService.findAll()).thenReturn(clubList);
+
+		mvc.perform(get(PATH_CLUBS_BASE)
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$", hasSize(0)));
+
+		verify(clubService).findAll();
 		verifyNoMoreInteractions(clubService);
 	}
 }

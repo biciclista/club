@@ -1,5 +1,7 @@
 package com.bcclst.club.server.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,5 +56,8 @@ public class ClubController {
 		return club;
 	}
 
-	
+	@RequestMapping(method = RequestMethod.GET)
+	public List<ClubDto> findAll() {
+		return clubService.findAll();
+	}
 }
