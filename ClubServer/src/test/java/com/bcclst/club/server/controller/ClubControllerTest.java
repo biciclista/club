@@ -58,7 +58,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void createIsValid() throws Exception {
-		final ClubDto club = new ClubDto(0L, "Club", "CLUB");
+		final ClubDto club = new ClubDto(0L, "Club", "CLUB", true);
 		when(clubService.create(any(ClubDto.class))).thenReturn(club);
 
 		this.mvc.perform(post(PATH_CLUBS)
@@ -78,6 +78,7 @@ public class ClubControllerTest {
 		assertThat(capturedClub.getId(), is(club.getId()));
 		assertThat(capturedClub.getName(), is(club.getName()));
 		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
+		assertThat(capturedClub.isActive(), is(club.isActive()));
 	}
 
 	@Test
@@ -88,7 +89,7 @@ public class ClubControllerTest {
 
 		this.mvc.perform(post(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
+				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM, false))))
 				.andExpect(status().isConflict())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.code", is(ERROR_DUPLICATED_ACRONYM)))
@@ -103,7 +104,7 @@ public class ClubControllerTest {
 	public void createWithInvalidDto() throws Exception {
 		this.mvc.perform(post(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
-				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
+				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A", false))))
 				.andExpect(status().isBadRequest())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(jsonPath("$.fieldErrors", hasSize(3)))
@@ -114,7 +115,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void findByIdIsValid() throws Exception {
-		final ClubDto foundClub = new ClubDto(1L, "Club", "CLUB");
+		final ClubDto foundClub = new ClubDto(1L, "Club", "CLUB", true);
 		when(clubService.findById(foundClub.getId())).thenReturn(foundClub);
 
 		this.mvc.perform(get(PATH_CLUBS_ID, 1L)
@@ -144,8 +145,8 @@ public class ClubControllerTest {
 
 	@Test
 	public void findAllIsValid() throws Exception {
-		final ClubDto club1 = new ClubDto(1L, "Club 1", "CLUB1");
-		final ClubDto club2 = new ClubDto(2L, "Club 2", "CLUB2");
+		final ClubDto club1 = new ClubDto(1L, "Club 1", "CLUB1", false);
+		final ClubDto club2 = new ClubDto(2L, "Club 2", "CLUB2", true);
 		final ClubDto[] clubs = { club1, club2 };
 		final List<ClubDto> clubList = Arrays.asList(clubs);
 
@@ -159,9 +160,11 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$[0].id", is(club1.getId().intValue())))
 				.andExpect(jsonPath("$[0].name", is(club1.getName())))
 				.andExpect(jsonPath("$[0].acronym", is(club1.getAcronym())))
+				.andExpect(jsonPath("$[0].active", is(club1.isActive())))
 				.andExpect(jsonPath("$[1].id", is(club2.getId().intValue())))
 				.andExpect(jsonPath("$[1].name", is(club2.getName())))
-				.andExpect(jsonPath("$[1].acronym", is(club2.getAcronym())));
+				.andExpect(jsonPath("$[1].acronym", is(club2.getAcronym())))
+				.andExpect(jsonPath("$[1].active", is(club2.isActive())));
 
 		verify(clubService).findAll();
 		verifyNoMoreInteractions(clubService);
@@ -186,7 +189,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void updateIsValid() throws Exception {
-		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1", false);
 
 		when(clubService.update(any(ClubDto.class))).thenReturn(club);
 
@@ -207,11 +210,12 @@ public class ClubControllerTest {
 		assertThat(capturedClub.getId(), is(club.getId()));
 		assertThat(capturedClub.getName(), is(club.getName()));
 		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
+		assertThat(capturedClub.isActive(), is(club.isActive()));
 	}
 
 	@Test
 	public void updateClubNotFound() throws Exception {
-		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1", true);
 
 		when(clubService.update(any(ClubDto.class))).thenThrow(new ClubNotFoundException(club.getId()));
 
@@ -227,8 +231,8 @@ public class ClubControllerTest {
 
 	@Test
 	public void updateDifferentIdThanUri() throws Exception {
-		final ClubDto club = new ClubDto(2L, "Club 1", "CLUB1");
-		final ClubDto updatedClub = new ClubDto(1L, "Club 1", "CLUB1");
+		final ClubDto club = new ClubDto(2L, "Club 1", "CLUB1", false);
+		final ClubDto updatedClub = new ClubDto(1L, "Club 1", "CLUB1", false);
 
 		when(clubService.update(any(ClubDto.class))).thenReturn(updatedClub);
 
@@ -249,7 +253,7 @@ public class ClubControllerTest {
 
 	@Test
 	public void deleteIsValid() throws Exception {
-		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1", true);
 
 		when(clubService.deleteById(club.getId())).thenReturn(club);
 

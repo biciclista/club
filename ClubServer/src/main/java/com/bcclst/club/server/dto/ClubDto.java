@@ -25,6 +25,8 @@ public class ClubDto {
 	@NotNull
 	@Size(min = 3, max = 64)
 	private String name;
+	
+	private boolean active = false;
 
 	/**
 	 * 
@@ -37,10 +39,11 @@ public class ClubDto {
 
 	}
 
-	public ClubDto(Long id, String name, String acronym) {
+	public ClubDto(Long id, String name, String acronym, Boolean active) {
 		this.id = id;
 		this.name = name;
 		this.acronym = acronym;
+		this.active = active;
 	}
 
 	public Long getId() {
@@ -65,6 +68,14 @@ public class ClubDto {
 
 	public void setAcronym(String acronym) {
 		this.acronym = acronym;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }
