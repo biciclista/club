@@ -266,12 +266,13 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$.acronym", is(club.getAcronym())));
 
 		verify(clubService).deleteById(club.getId());
+		verifyNoMoreInteractions(clubService);
 	}
 
 	@Test
 	public void deleteClubNotFound() throws Exception {
 		final Long id = new Long(1);
-		
+
 		when(clubService.deleteById(id)).thenThrow(new ClubNotFoundException(id));
 
 		mvc.perform(delete(PATH_CLUBS_ID, id)
@@ -280,5 +281,26 @@ public class ClubControllerTest {
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
 
 		verify(clubService).deleteById(id);
+		verifyNoMoreInteractions(clubService);
+	}
+
+	@Test
+	public void updateOnlyActive() throws Exception {
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1", true);
+
+		when(clubService.changeState(club.getId(), true)).thenReturn(club);
+		
+		mvc.perform(put(PATH_CLUBS_ID, club.getId())
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.param("active", "true"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$.id", is(club.getId().intValue())))
+				.andExpect(jsonPath("$.name", is(club.getName())))
+				.andExpect(jsonPath("$.acronym", is(club.getAcronym())))
+				.andExpect(jsonPath("$.active", is(club.isActive())));
+		
+		verify(clubService).changeState(club.getId(), club.isActive());
+		verifyNoMoreInteractions(clubService);
 	}
 }

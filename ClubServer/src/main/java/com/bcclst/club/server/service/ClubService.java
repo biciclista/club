@@ -51,4 +51,6 @@ public interface ClubService {
 	 * @throws ClubNotFoundException If the club to delete does not exist.
 	 */
 	ClubDto deleteById(long id) throws ClubNotFoundException;
+	
+	ClubDto changeState(long id, boolean active) throws ClubNotFoundException;
 }

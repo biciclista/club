@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bcclst.club.server.dto.ClubDto;
@@ -95,6 +96,12 @@ public class ClubController {
 
 		return clubService.update(club);
 	}
+	
+	@RequestMapping(value = "{id}",  method = RequestMethod.PUT, params = {"active"})
+	public ClubDto changeState(@PathVariable("id") Long id, @RequestParam("active") boolean active) {
+		return clubService.changeState(id, active);
+	}
+	
 	
 	/**
 	 * Deletes one club.
