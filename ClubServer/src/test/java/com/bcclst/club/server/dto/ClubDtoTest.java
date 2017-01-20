@@ -1,6 +1,8 @@
 package com.bcclst.club.server.dto;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.util.Set;
 
@@ -105,6 +107,13 @@ public class ClubDtoTest {
 		ConstraintViolation<ClubDto> violation = violations.iterator().next();
 		assertEquals("acronym", violation.getPropertyPath().toString());
 		assertEquals("{javax.validation.constraints.Pattern.message}", violation.getMessageTemplate());
+	}
+	
+	@Test
+	public void acronymToUpperCase() {
+		ClubDto club = new ClubDto(ID_OK, NAME_OK, ACRONYM_OK.toLowerCase(), false);
+		
+		assertThat(club.getAcronym(), is(ACRONYM_OK));
 	}
 
 }

@@ -42,7 +42,7 @@ public class ClubDto {
 	public ClubDto(Long id, String name, String acronym, Boolean active) {
 		this.id = id;
 		this.name = name;
-		this.acronym = acronym;
+		this.acronym = acronym.toUpperCase();
 		this.active = active;
 	}
 
@@ -67,7 +67,7 @@ public class ClubDto {
 	}
 
 	public void setAcronym(String acronym) {
-		this.acronym = acronym;
+		this.acronym = acronym.toUpperCase();
 	}
 
 	public boolean isActive() {
