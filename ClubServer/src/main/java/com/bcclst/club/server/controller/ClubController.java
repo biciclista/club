@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +25,8 @@ import com.bcclst.club.server.service.exception.DuplicatedClubAcronymException;
 @RestController
 @RequestMapping("/clubs")
 public class ClubController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(ClubController.class);
 
 	final private ClubService clubService;
 
@@ -49,6 +53,13 @@ public class ClubController {
 		return clubService.create(club);
 	}
 
+	/**
+	 * Retrieves one single club.
+	 * 
+	 * @param id The identifier of the club to retrieve.
+	 * @return {@link ClubDto} with the data of the requested club.
+	 * @throws ClubNotFoundException If the requested club can't be found.
+	 */
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ClubDto findById(@PathVariable("id") Long id) throws ClubNotFoundException {
 		ClubDto club = clubService.findById(id);
@@ -56,8 +67,43 @@ public class ClubController {
 		return club;
 	}
 
+	/**
+	 * Retrieves all clubs.
+	 * 
+	 * @return List populated with the {@link ClubDto} of all existent clubs.
+	 */
 	@RequestMapping(method = RequestMethod.GET)
 	public List<ClubDto> findAll() {
 		return clubService.findAll();
+	}
+
+	/**
+	 * Updates one club.
+	 * 
+	 * @param id Identifier of the club to be updated.
+	 * @param club {@link ClubDto} with the values of the club to update.
+	 * @return {@link ClubDto} with the updated values of the club.
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ClubDto update(@PathVariable("id") Long id, @RequestBody @Valid final ClubDto club) {
+
+		// If club identifier is different, overwrite it.
+		if (id != club.getId()) {
+			LOGGER.debug("Identifier from ClubDto ({}) is different than identifier from URI ({})", club.getId(), id);
+			club.setId(id);
+		}
+
+		return clubService.update(club);
+	}
+	
+	/**
+	 * Deletes one club.
+	 * 
+	 * @param id identifier of the club to delete.
+	 * @return {@link ClubDto} with the values of the deleted club.
+	 */
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ClubDto deleteById(@PathVariable("id") Long id) {
+		return clubService.deleteById(id);
 	}
 }

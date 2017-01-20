@@ -10,8 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,9 +40,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @RunWith(SpringRunner.class)
 @WebMvcTest(ClubController.class)
 public class ClubControllerTest {
-	// Base path for URLs.
-	private static final String PATH_CLUBS_BASE = "/clubs";
-	private static final String PATH_CLUBS_FIND_BY_ID = PATH_CLUBS_BASE + "/{id}";
+	// URIs.
+	private static final String PATH_CLUBS = "/clubs";
+	private static final String PATH_CLUBS_ID = PATH_CLUBS + "/{id}";
 
 	// Error codes.
 	private final static String ERROR_DUPLICATED_ACRONYM = "10001001";
@@ -59,7 +61,7 @@ public class ClubControllerTest {
 		final ClubDto club = new ClubDto(0L, "Club", "CLUB");
 		when(clubService.create(any(ClubDto.class))).thenReturn(club);
 
-		this.mvc.perform(post(PATH_CLUBS_BASE)
+		this.mvc.perform(post(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(club)))
 				.andExpect(status().isOk())
@@ -68,16 +70,13 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$.name", is(club.getName())))
 				.andExpect(jsonPath("$.acronym", is(club.getAcronym())));
 
-		// Verify ClubService.create() is called once.
 		ArgumentCaptor<ClubDto> dtoCaptor = ArgumentCaptor.forClass(ClubDto.class);
 		verify(clubService).create(dtoCaptor.capture());
 		verifyNoMoreInteractions(clubService);
 
-		// Verify the ClubDto passed to ClubService.
 		ClubDto capturedClub = dtoCaptor.getValue();
 		assertThat(capturedClub.getId(), is(club.getId()));
 		assertThat(capturedClub.getName(), is(club.getName()));
-		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
 		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
 	}
 
@@ -87,7 +86,7 @@ public class ClubControllerTest {
 
 		when(clubService.create(any(ClubDto.class))).thenThrow(new DuplicatedClubAcronymException(DUPLICATED_ACRONYM));
 
-		this.mvc.perform(post(PATH_CLUBS_BASE)
+		this.mvc.perform(post(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(0L, "AAA", DUPLICATED_ACRONYM))))
 				.andExpect(status().isConflict())
@@ -96,14 +95,13 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$.message",
 						is(String.format("The acronym %s is in use by another club.", DUPLICATED_ACRONYM))));
 
-		// Verify ClubService.create() is called once.
 		verify(clubService).create(any(ClubDto.class));
 		verifyNoMoreInteractions(clubService);
 	}
 
 	@Test
 	public void createWithInvalidDto() throws Exception {
-		this.mvc.perform(post(PATH_CLUBS_BASE)
+		this.mvc.perform(post(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8)
 				.content(objectMapper.writeValueAsBytes(new ClubDto(null, "AA", "A_A"))))
 				.andExpect(status().isBadRequest())
@@ -111,7 +109,6 @@ public class ClubControllerTest {
 				.andExpect(jsonPath("$.fieldErrors", hasSize(3)))
 				.andExpect(jsonPath("$.fieldErrors[*].field", containsInAnyOrder("id", "name", "acronym")));
 
-		// Check that ClubService is not called.
 		verifyZeroInteractions(clubService);
 	}
 
@@ -120,7 +117,7 @@ public class ClubControllerTest {
 		final ClubDto foundClub = new ClubDto(1L, "Club", "CLUB");
 		when(clubService.findById(foundClub.getId())).thenReturn(foundClub);
 
-		this.mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
+		this.mvc.perform(get(PATH_CLUBS_ID, 1L)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -136,7 +133,7 @@ public class ClubControllerTest {
 	public void findByIdClubNotFound() throws Exception {
 		when(clubService.findById(anyLong())).thenThrow(new ClubNotFoundException(0));
 
-		mvc.perform(get(PATH_CLUBS_FIND_BY_ID, 1L)
+		mvc.perform(get(PATH_CLUBS_ID, 1L)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isNotFound())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
@@ -146,7 +143,7 @@ public class ClubControllerTest {
 	}
 
 	@Test
-	public void findAll() throws Exception {
+	public void findAllIsValid() throws Exception {
 		final ClubDto club1 = new ClubDto(1L, "Club 1", "CLUB1");
 		final ClubDto club2 = new ClubDto(2L, "Club 2", "CLUB2");
 		final ClubDto[] clubs = { club1, club2 };
@@ -154,7 +151,7 @@ public class ClubControllerTest {
 
 		when(clubService.findAll()).thenReturn(clubList);
 
-		mvc.perform(get(PATH_CLUBS_BASE)
+		mvc.perform(get(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -177,7 +174,7 @@ public class ClubControllerTest {
 
 		when(clubService.findAll()).thenReturn(clubList);
 
-		mvc.perform(get(PATH_CLUBS_BASE)
+		mvc.perform(get(PATH_CLUBS)
 				.contentType(MediaType.APPLICATION_JSON_UTF8))
 				.andExpect(status().isOk())
 				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
@@ -185,5 +182,99 @@ public class ClubControllerTest {
 
 		verify(clubService).findAll();
 		verifyNoMoreInteractions(clubService);
+	}
+
+	@Test
+	public void updateIsValid() throws Exception {
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+
+		when(clubService.update(any(ClubDto.class))).thenReturn(club);
+
+		mvc.perform(put(PATH_CLUBS_ID, 1)
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(objectMapper.writeValueAsBytes(club)))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$.id", is(club.getId().intValue())))
+				.andExpect(jsonPath("$.name", is(club.getName())))
+				.andExpect(jsonPath("$.acronym", is(club.getAcronym())));
+
+		ArgumentCaptor<ClubDto> dtoCaptor = ArgumentCaptor.forClass(ClubDto.class);
+		verify(clubService).update(dtoCaptor.capture());
+		verifyNoMoreInteractions(clubService);
+
+		ClubDto capturedClub = dtoCaptor.getValue();
+		assertThat(capturedClub.getId(), is(club.getId()));
+		assertThat(capturedClub.getName(), is(club.getName()));
+		assertThat(capturedClub.getAcronym(), is(club.getAcronym()));
+	}
+
+	@Test
+	public void updateClubNotFound() throws Exception {
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+
+		when(clubService.update(any(ClubDto.class))).thenThrow(new ClubNotFoundException(club.getId()));
+
+		mvc.perform(put(PATH_CLUBS_ID, club.getId())
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(objectMapper.writeValueAsBytes(club)))
+				.andExpect(status().isNotFound())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+
+		verify(clubService).update(any(ClubDto.class));
+		verifyNoMoreInteractions(clubService);
+	}
+
+	@Test
+	public void updateDifferentIdThanUri() throws Exception {
+		final ClubDto club = new ClubDto(2L, "Club 1", "CLUB1");
+		final ClubDto updatedClub = new ClubDto(1L, "Club 1", "CLUB1");
+
+		when(clubService.update(any(ClubDto.class))).thenReturn(updatedClub);
+
+		mvc.perform(put(PATH_CLUBS_ID, 1)
+				.contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content(objectMapper.writeValueAsBytes(club)))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$.id", is(updatedClub.getId().intValue())));
+
+		ArgumentCaptor<ClubDto> dtoCaptor = ArgumentCaptor.forClass(ClubDto.class);
+		verify(clubService).update(dtoCaptor.capture());
+		verifyNoMoreInteractions(clubService);
+
+		ClubDto capturedClub = dtoCaptor.getValue();
+		assertThat(capturedClub.getId(), is(updatedClub.getId()));
+	}
+
+	@Test
+	public void deleteIsValid() throws Exception {
+		final ClubDto club = new ClubDto(1L, "Club 1", "CLUB1");
+
+		when(clubService.deleteById(club.getId())).thenReturn(club);
+
+		mvc.perform(delete(PATH_CLUBS_ID, club.getId())
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isOk())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(jsonPath("$.id", is(club.getId().intValue())))
+				.andExpect(jsonPath("$.name", is(club.getName())))
+				.andExpect(jsonPath("$.acronym", is(club.getAcronym())));
+
+		verify(clubService).deleteById(club.getId());
+	}
+
+	@Test
+	public void deleteClubNotFound() throws Exception {
+		final Long id = new Long(1);
+		
+		when(clubService.deleteById(id)).thenThrow(new ClubNotFoundException(id));
+
+		mvc.perform(delete(PATH_CLUBS_ID, id)
+				.contentType(MediaType.APPLICATION_JSON_UTF8))
+				.andExpect(status().isNotFound())
+				.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+
+		verify(clubService).deleteById(id);
 	}
 }
