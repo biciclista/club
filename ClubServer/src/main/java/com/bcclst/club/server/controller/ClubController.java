@@ -97,7 +97,7 @@ public class ClubController {
 		return clubService.update(club);
 	}
 	
-	@RequestMapping(value = "{id}",  method = RequestMethod.PUT, params = {"active"})
+	@RequestMapping(value = "/{id}",  method = RequestMethod.PUT, params = {"active"})
 	public ClubDto changeState(@PathVariable("id") Long id, @RequestParam("active") boolean active) {
 		return clubService.changeState(id, active);
 	}
