@@ -2,6 +2,8 @@ package com.bcclst.club.webclient.service;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -29,34 +31,42 @@ import com.bcclst.club.webclient.dto.RestErrorDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ClubServiceTest {
+	
 	// URIs.
-	private static final String SCHEME_HTTP = "http";
+	private static final String SCHEME = "http";
 	private static final String HOST = "localhost";
 	private static final int PORT = 8080;
-	private static final String PATH_CLUBS = "/rest/clubs";
+	private static final String PATH_REST = "/rest";
+	private static final String PATH_CLUBS = "/clubs";
 	private static final String PATH_CLUBS_ID = PATH_CLUBS + "/{id}";
 	private static final String PATH_CLUBS_ID_DISABLE = PATH_CLUBS_ID + "/disable";
 	private static final String PATH_CLUBS_ID_ENABLE = PATH_CLUBS_ID + "/enable";
 
-	private MockRestServiceServer mockServer;
 	private RestTemplate restTemplate;
 	private ObjectMapper objectMapper;
-	private ClubService clubService;
 	private UriComponentsBuilder uriBuilder;
-	private RestProperties restProperties;
-
+	
+	private MockRestServiceServer mockServer;
+	private RestProperties restProperties = mock(RestProperties.class);
+	
+	private ClubService clubService;
+	
 	@Before
 	public void setUp() {
 		restTemplate = new RestTemplate();
 		objectMapper = new ObjectMapper();
-		restProperties = new RestProperties();
-		restProperties.setScheme("http");
-		restProperties.setHost("localhost");
-		restProperties.setPort(8080);
-		restProperties.setPath("/rest");
+		when(restProperties.getScheme()).thenReturn(SCHEME);
+		when(restProperties.getHost()).thenReturn(HOST);
+		when(restProperties.getPort()).thenReturn(PORT);
+		when(restProperties.getPath()).thenReturn(PATH_REST);
+		
 		clubService = new ClubServiceRest(restTemplate, restProperties);
 		mockServer = MockRestServiceServer.bindTo(restTemplate).build();
-		uriBuilder = UriComponentsBuilder.newInstance().scheme(SCHEME_HTTP).host(HOST).port(PORT);
+		uriBuilder = UriComponentsBuilder.newInstance()
+				.scheme(restProperties.getScheme())
+				.host(restProperties.getHost())
+				.port(restProperties.getPort())
+				.path(restProperties.getPath());
 	}
 
 	@Test
