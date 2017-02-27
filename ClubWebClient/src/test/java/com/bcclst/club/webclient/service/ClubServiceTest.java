@@ -22,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.bcclst.club.webclient.config.RestProperties;
 import com.bcclst.club.webclient.dto.ClubDto;
 import com.bcclst.club.webclient.dto.FieldErrorDto;
 import com.bcclst.club.webclient.dto.RestErrorDto;
@@ -32,26 +33,28 @@ public class ClubServiceTest {
 	private static final String SCHEME_HTTP = "http";
 	private static final String HOST = "localhost";
 	private static final int PORT = 8080;
-	private static final String PATH_CLUBS = "/clubs";
+	private static final String PATH_CLUBS = "/rest/clubs";
 	private static final String PATH_CLUBS_ID = PATH_CLUBS + "/{id}";
 	private static final String PATH_CLUBS_ID_DISABLE = PATH_CLUBS_ID + "/disable";
 	private static final String PATH_CLUBS_ID_ENABLE = PATH_CLUBS_ID + "/enable";
 
 	private MockRestServiceServer mockServer;
-
 	private RestTemplate restTemplate;
-
-	ObjectMapper objectMapper;
-
+	private ObjectMapper objectMapper;
 	private ClubService clubService;
-	
 	private UriComponentsBuilder uriBuilder;
+	private RestProperties restProperties;
 
 	@Before
 	public void setUp() {
 		restTemplate = new RestTemplate();
 		objectMapper = new ObjectMapper();
-		clubService = new ClubServiceRest(restTemplate);
+		restProperties = new RestProperties();
+		restProperties.setScheme("http");
+		restProperties.setHost("localhost");
+		restProperties.setPort(8080);
+		restProperties.setPath("/rest");
+		clubService = new ClubServiceRest(restTemplate, restProperties);
 		mockServer = MockRestServiceServer.bindTo(restTemplate).build();
 		uriBuilder = UriComponentsBuilder.newInstance().scheme(SCHEME_HTTP).host(HOST).port(PORT);
 	}
